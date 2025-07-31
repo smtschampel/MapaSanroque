@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mapa con Zoom y Pan</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #f0f0f0;
+      overflow: hidden;
+    }
+    #container {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+    }
+    #image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+      cursor: grab;
+    }
+    .controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+    }
+    .controls button {
+      padding: 8px 12px;
+      margin-right: 5px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button onclick="zoomIn()">🔍 +</button>
+    <button onclick="zoomOut()">🔍 -</button>
+    <button onclick="resetZoom()">↺</button>
+  </div>
+  <div id="container">
+    <img id="image" src="https://static.wixstatic.com/media/272beb_187aee6cee284b89a059f3527116617f~mv2.png" alt="Mapa" />
+  </div>
+
+  <script>
+    const img = document.getElementById("image");
+    let scale = 1;
+    let pos = { x: 0, y: 0 };
+    let drag = false;
+    let start = { x: 0, y: 0 };
+
+    function setTransform() {
+      img.style.transform = `translate(${pos.x}px, ${pos.y}px) scale(${scale})`;
+    }
+
+    function zoomIn() {
+      scale *= 1.2;
+      setTransform();
+    }
+
+    function zoomOut() {
+      scale /= 1.2;
+      setTransform();
+    }
+
+    function resetZoom() {
+      scale = 1;
+      pos = { x: 0, y: 0 };
+      setTransform();
+    }
+
+    img.addEventListener("mousedown", (e) => {
+      drag = true;
+      img.style.cursor = "grabbing";
+      start = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+    });
+
+    window.addEventListener("mouseup", () => {
+      drag = false;
+      img.style.cursor = "grab";
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!drag) return;
+      pos.x = e.clientX - start.x;
+      pos.y = e.clientY - start.y;
+      setTransform();
+    });
+  </script>
+</body>
+</html>
